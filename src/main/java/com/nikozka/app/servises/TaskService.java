@@ -1,6 +1,5 @@
 package com.nikozka.app.servises;
 
-import com.nikozka.app.dtos.RequestUpdateStatusDto;
 import com.nikozka.app.dtos.RequestCreateTaskDto;
 import com.nikozka.app.dtos.TaskDto;
 import com.nikozka.app.dtos.TaskStatus;
@@ -26,8 +25,8 @@ public class TaskService {
     public Long createTask(RequestCreateTaskDto task) {
         TaskEntity taskEntity = convertToEntity(task);
         taskEntity.setStatus(TaskStatus.PLANNED);
-
-        return taskRepository.save(taskEntity).getId();
+        TaskEntity saved = taskRepository.save(taskEntity);
+        return saved.getId();
     }
 
     public TaskDto getTaskById(Long taskId) {
@@ -35,9 +34,8 @@ public class TaskService {
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId)));
     }
 
-    public void updateTaskStatus(RequestUpdateStatusDto requestUpdateStatusDto) {
-        TaskDto task = getTaskById(requestUpdateStatusDto.getId());
-        TaskStatus status = requestUpdateStatusDto.getStatus();
+    public void updateTaskStatus(Long id, TaskStatus status) {
+        TaskDto task = getTaskById(id);
 
         if (task.getStatus() == TaskStatus.DONE ||
                 task.getStatus() == TaskStatus.CANCELLED) {
@@ -74,7 +72,7 @@ public class TaskService {
         return taskRepository.findAll()
                 .stream()
                 .map(this::convertToTaskDTO)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public void deleteTask(Long taskId) {
