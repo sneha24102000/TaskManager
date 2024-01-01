@@ -12,15 +12,16 @@ import java.time.LocalDateTime;
 
 @Getter
 @Entity
+@Setter
 public class TaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Setter
+
     private String description;
-    @Setter
+
     private LocalDateTime dueDate;
-    @Setter
+
     private TaskStatus status;
 
     public TaskEntity() {
