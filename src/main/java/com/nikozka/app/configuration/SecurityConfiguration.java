@@ -32,7 +32,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui/**", "v3/api-docs/**", "/users", "/users/authenticate")
                         .permitAll()
-                        .requestMatchers("/tasks/**").hasAnyAuthority("ADMIN", "USER")
+                        .requestMatchers("/tasks/**").hasAnyAuthority( "USER")
                         .anyRequest()
                         .authenticated())
                 .httpBasic(withDefaults());

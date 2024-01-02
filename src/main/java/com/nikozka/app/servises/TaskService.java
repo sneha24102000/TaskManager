@@ -8,6 +8,8 @@ import com.nikozka.app.entity.TaskEntity;
 import com.nikozka.app.exceptions.InvalidStateException;
 import com.nikozka.app.exceptions.TaskNotFoundException;
 import com.nikozka.app.repositories.TaskRepository;
+import com.nikozka.app.utils.TaskStatusValidator;
+import com.nikozka.app.utils.TaskStatusValidatorFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
@@ -22,6 +24,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     private final ModelMapper modelMapper;
+    private final TaskStatusValidatorFactory factory;
 
     public Long createTask(RequestCreateTaskDto task) {
         TaskEntity taskEntity = convertToEntity(task);
@@ -36,44 +39,18 @@ public class TaskService {
     }
 
     public void updateTaskStatus(Long id, StatusDto statusDto) {
-
         TaskEntity task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
-        TaskStatus status = task.getStatus();
+        TaskStatus previousStatus = task.getStatus();
 
         TaskStatus newStatus = TaskStatus.valueOfIgnoreCase(statusDto.getNewStatus());
-        task.setStatus(newStatus);
 
-        if (status == TaskStatus.DONE ||
-                status == TaskStatus.CANCELLED) {
-            throw new InvalidStateException("Task is already in final state");
+        TaskStatusValidator updater = factory.getValidator(previousStatus);
+
+        if (!updater.isTaskStatusValid(task, newStatus)) {
+            throw new InvalidStateException("Invalid state transition for task with id: " + task.getId());
         }
-        if (status == TaskStatus.PLANNED
-                &&
-                newStatus == TaskStatus.WORK_IN_PROGRESS ||
-                newStatus == TaskStatus.POSTPONED ||
-                newStatus == TaskStatus.CANCELLED) {
-
+            task.setStatus(newStatus);
             taskRepository.save(task);
-            return;
-        }
-        if (status == TaskStatus.WORK_IN_PROGRESS || status == TaskStatus.POSTPONED
-                &&
-                newStatus == TaskStatus.NOTIFIED ||
-                newStatus == TaskStatus.SIGNED ||
-                newStatus == TaskStatus.CANCELLED) {
-
-            taskRepository.save(task);
-            return;
-        }
-        if (status == TaskStatus.NOTIFIED || status == TaskStatus.SIGNED
-                &&
-                newStatus == TaskStatus.DONE ||
-                newStatus == TaskStatus.CANCELLED) {
-
-            taskRepository.save(task);
-            return;
-        }
-        throw new InvalidStateException("Invalid state transition for task with id: " + task.getId());
     }
 
     public List<TaskDto> getAllTasks(Pageable pageable) {
