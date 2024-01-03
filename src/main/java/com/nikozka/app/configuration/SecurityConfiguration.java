@@ -21,7 +21,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @Configuration
-//@EnableGlobalMethodSecurity(prePostEnabled = true)
 @EnableMethodSecurity
 public class SecurityConfiguration {
 

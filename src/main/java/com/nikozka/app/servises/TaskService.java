@@ -33,9 +33,7 @@ public class TaskService {
     public Long createTask(RequestCreateTaskDto task) {
         TaskEntity taskEntity = convertToEntity(task);
         taskEntity.setStatus(TaskStatus.PLANNED);
-
         taskEntity.setUserId(getUserId());
-
         return taskRepository.save(taskEntity).getId();
     }
 
@@ -75,11 +73,9 @@ public class TaskService {
 
 
     public void deleteTask(Long taskId) {
-        TaskDto task = getTaskById(taskId);
-        if(task == null){
-           throw new TaskNotFoundException("Task not found with id: " + taskId);
-        }
-        taskRepository.delete(convertToEntity(task));
+        TaskEntity task = taskRepository.findById(taskId).orElseThrow(
+                () -> new TaskNotFoundException("Task not found with id: " + taskId));
+        taskRepository.delete(task);
     }
 
     private TaskDto convertToTaskDTO(TaskEntity task) {
@@ -90,14 +86,9 @@ public class TaskService {
         return modelMapper.map(task, TaskEntity.class);
     }
 
-    private TaskEntity convertToEntity(TaskDto task) {
-        return modelMapper.map(task, TaskEntity.class);
-    }
-
     private Long getUserId() {
         UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
 
         return user.getId();
     }
-
 }

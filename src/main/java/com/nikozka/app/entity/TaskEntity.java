@@ -12,8 +12,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Getter
 @Entity
+@Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,11 +21,8 @@ public class TaskEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String description;
-
-    private LocalDate dueDate;
-
+    private LocalDate date;
     private TaskStatus status;
     private Long userId;
 }
