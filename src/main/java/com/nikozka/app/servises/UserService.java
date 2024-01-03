@@ -16,7 +16,6 @@ public class UserService {
     private final ModelMapper modelMapper;
 
     public void saveUser(UserDto userDTO) {
-
         if(userRepository.findByUsername(userDTO.getUsername()) != null){
             throw new UserAlreadyExistException("A user with the specified username already exists");
         }
