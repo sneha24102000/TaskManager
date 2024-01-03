@@ -27,6 +27,6 @@ public class SecurityUserDetailsService implements UserDetailsService {
         return new User(
                 userEntity.getUsername(),
                 userEntity.getPassword(),
-                Collections.singleton(new SimpleGrantedAuthority("USER")));
+                Collections.singleton(new SimpleGrantedAuthority(userEntity.getRole())));
     }
 }

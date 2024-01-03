@@ -36,4 +36,5 @@ public class UserController {
         securityUserDetailsService.loadUserByUsername(request.getUsername());
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }

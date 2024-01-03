@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Getter
 @Entity
 @NoArgsConstructor
 public class UserEntity {
@@ -12,12 +13,12 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Setter
-    @Getter
     @Column(unique = true)
     private String username;
     @Setter
-    @Getter
     private String password;
+    @Setter
+    private String role = "ROLE_USER";
 
     public UserEntity(String username, String password) {
         this.username = username;

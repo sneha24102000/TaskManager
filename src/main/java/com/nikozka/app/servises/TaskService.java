@@ -5,14 +5,17 @@ import com.nikozka.app.dtos.StatusDto;
 import com.nikozka.app.dtos.TaskDto;
 import com.nikozka.app.dtos.TaskStatus;
 import com.nikozka.app.entity.TaskEntity;
+import com.nikozka.app.entity.UserEntity;
 import com.nikozka.app.exceptions.InvalidStateException;
 import com.nikozka.app.exceptions.TaskNotFoundException;
 import com.nikozka.app.repositories.TaskRepository;
+import com.nikozka.app.repositories.UserRepository;
 import com.nikozka.app.utils.TaskStatusValidator;
 import com.nikozka.app.utils.TaskStatusValidatorFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
     private final ModelMapper modelMapper;
     private final TaskStatusValidatorFactory factory;
@@ -29,13 +33,22 @@ public class TaskService {
     public Long createTask(RequestCreateTaskDto task) {
         TaskEntity taskEntity = convertToEntity(task);
         taskEntity.setStatus(TaskStatus.PLANNED);
-        TaskEntity saved = taskRepository.save(taskEntity);
-        return saved.getId();
+
+        taskEntity.setUserId(getUserId());
+
+        return taskRepository.save(taskEntity).getId();
     }
 
     public TaskDto getTaskById(Long taskId) {
         return convertToTaskDTO(taskRepository.findById(taskId)
                 .orElseThrow());
+    }
+
+    public List<TaskDto> getTasksForUser(Pageable pageable) {
+        return taskRepository.findByUserId(getUserId(), pageable)
+                .stream()
+                .map(this::convertToTaskDTO)
+                .toList();
     }
 
     public void updateTaskStatus(Long id, StatusDto statusDto) {
@@ -49,8 +62,8 @@ public class TaskService {
         if (!updater.isTaskStatusValid(task, newStatus)) {
             throw new InvalidStateException("Invalid state transition for task with id: " + task.getId());
         }
-            task.setStatus(newStatus);
-            taskRepository.save(task);
+        task.setStatus(newStatus);
+        taskRepository.save(task);
     }
 
     public List<TaskDto> getAllTasks(Pageable pageable) {
@@ -60,8 +73,12 @@ public class TaskService {
                 .toList();
     }
 
+
     public void deleteTask(Long taskId) {
         TaskDto task = getTaskById(taskId);
+        if(task == null){
+           throw new TaskNotFoundException("Task not found with id: " + taskId);
+        }
         taskRepository.delete(convertToEntity(task));
     }
 
@@ -76,4 +93,11 @@ public class TaskService {
     private TaskEntity convertToEntity(TaskDto task) {
         return modelMapper.map(task, TaskEntity.class);
     }
+
+    private Long getUserId() {
+        UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        return user.getId();
+    }
+
 }
