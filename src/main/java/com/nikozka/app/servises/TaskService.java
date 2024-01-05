@@ -30,16 +30,16 @@ public class TaskService {
     private final ModelMapper modelMapper;
     private final TaskStatusValidatorFactory factory;
 
-    public Long createTask(RequestCreateTaskDto task) {
-        TaskEntity taskEntity = convertToEntity(task);
-        taskEntity.setStatus(TaskStatus.PLANNED);
-        taskEntity.setUserId(getUserId());
-        return taskRepository.save(taskEntity).getId();
+    public List<TaskDto> getAllTasks(Pageable pageable) {
+        return taskRepository.findAll(pageable)
+                .stream()
+                .map(this::convertToTaskDTO)
+                .toList();
     }
 
     public TaskDto getTaskById(Long taskId) {
         return convertToTaskDTO(taskRepository.findById(taskId)
-                .orElseThrow());
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId)));
     }
 
     public List<TaskDto> getTasksForUser(Pageable pageable) {
@@ -47,6 +47,13 @@ public class TaskService {
                 .stream()
                 .map(this::convertToTaskDTO)
                 .toList();
+    }
+
+    public Long createTask(RequestCreateTaskDto task) {
+        TaskEntity taskEntity = convertToEntity(task);
+        taskEntity.setStatus(TaskStatus.PLANNED);
+        taskEntity.setUserId(getUserId());
+        return taskRepository.save(taskEntity).getId();
     }
 
     public void updateTaskStatus(Long id, StatusDto statusDto) {
@@ -62,13 +69,6 @@ public class TaskService {
         }
         task.setStatus(newStatus);
         taskRepository.save(task);
-    }
-
-    public List<TaskDto> getAllTasks(Pageable pageable) {
-        return taskRepository.findAll(pageable)
-                .stream()
-                .map(this::convertToTaskDTO)
-                .toList();
     }
 
 

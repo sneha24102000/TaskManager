@@ -6,18 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
+@Setter
 @Entity
 @NoArgsConstructor
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Setter
     @Column(unique = true)
     private String username;
-    @Setter
     private String password;
-    @Setter
     private String role = "ROLE_USER";
 
     public UserEntity(String username, String password) {
