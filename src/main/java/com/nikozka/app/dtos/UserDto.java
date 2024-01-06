@@ -13,10 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserDto {
-    @NotNull
-    @Size(min = 5, max = 255, message = "User name must be between 5 and 255 characters")
+    @NotNull(message = "user.username.notNull")
+    @Size(min = 5, max = 255, message = "user.username.size")
     private String username;
-    @NotNull
-    @Size(min = 8, max = 255, message = "Password must be between 8 and 255 characters")
+    @NotNull(message = "user.password.notNull")
+    @Size(min = 8, max = 255, message = "user.password.size")
     private String password;
 }

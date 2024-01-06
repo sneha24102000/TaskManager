@@ -12,8 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class StatusDto {
-        @NotNull(message = "New status is required")
+        @NotNull(message = "status.newStatus.notNull")
         @Pattern(regexp = "(?i)PLANNED|WORK_IN_PROGRESS|POSTPONED|NOTIFIED|SIGNED|DONE|CANCELLED",
-                message = "Invalid status. Allowed values are PLANNED, WORK_IN_PROGRESS, POSTPONED, NOTIFIED, SIGNED, DONE, CANCELLED")
+                message = "status.newStatus.invalid")
         private String newStatus;
 }

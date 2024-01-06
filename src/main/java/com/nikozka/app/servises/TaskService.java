@@ -14,6 +14,8 @@ import com.nikozka.app.utils.TaskStatusValidator;
 import com.nikozka.app.utils.TaskStatusValidatorFactory;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -29,6 +31,8 @@ public class TaskService {
 
     private final ModelMapper modelMapper;
     private final TaskStatusValidatorFactory factory;
+    private final MessageSource messageSource;
+
 
     public List<TaskDto> getAllTasks(Pageable pageable) {
         return taskRepository.findAll(pageable)
@@ -64,7 +68,7 @@ public class TaskService {
         TaskStatusValidator updater = factory.getValidator(previousStatus);
 
         if (!updater.isTaskStatusValid(task, newStatus)) {
-            throw new InvalidStateException("Invalid state transition for task with id: " + task.getId());
+            throw new InvalidStateException(messageSource.getMessage("task.invalid.state.transition", new Object[]{taskId}, LocaleContextHolder.getLocale()));
         }
         task.setStatus(newStatus);
         taskRepository.save(task);
@@ -90,6 +94,7 @@ public class TaskService {
 
     private TaskEntity findTaskById(Long taskId) {
         return taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId));
+                .orElseThrow(() -> new TaskNotFoundException(messageSource.getMessage(
+                        "task.not.found", new Object[]{taskId}, LocaleContextHolder.getLocale())));
     }
 }

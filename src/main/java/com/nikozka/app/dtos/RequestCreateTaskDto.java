@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 public class RequestCreateTaskDto {
     @NotNull
-    @Size(min = 5, max = 255, message = "Description name must be between 5 and 255 characters")
+    @Size(min = 5, max = 255, message = "request.create.task.description.size")
     private String description;
 
     @NotNull

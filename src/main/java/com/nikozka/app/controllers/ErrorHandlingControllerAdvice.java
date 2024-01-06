@@ -5,7 +5,9 @@ import com.nikozka.app.exceptions.TaskNotFoundException;
 import com.nikozka.app.exceptions.UserAlreadyExistException;
 import com.nikozka.app.exceptions.UserNotFoundException;
 import com.nikozka.app.model.ErrorResponse;
-import org.springframework.context.support.DefaultMessageSourceResolvable;
+import lombok.RequiredArgsConstructor;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,7 +22,9 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@RequiredArgsConstructor
 class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
+    private final MessageSource messageSource;
 
     @ExceptionHandler(UserNotFoundException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -39,7 +43,7 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
         String errorMessages = ex.getBindingResult().getFieldErrors().stream()
-                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .map(fieldError -> messageSource.getMessage(fieldError.getDefaultMessage(),null, LocaleContextHolder.getLocale()))
                 .collect(Collectors.joining(", "));
 
         return new ResponseEntity<>(new ErrorResponse(errorMessages), status);
