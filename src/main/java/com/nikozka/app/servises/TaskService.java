@@ -88,7 +88,6 @@ public class TaskService {
 
     private Long getUserId() {
         UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
-
         return user.getId();
     }
 }

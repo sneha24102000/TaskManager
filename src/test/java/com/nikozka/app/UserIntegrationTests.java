@@ -38,28 +38,14 @@ class UserIntegrationTests {
     void setUp() {
         userRepository.deleteAll();
     }
+    UserDto validUserDto = new UserDto("testUser", "testPassword");
 
     @Test
     void whenValidUserRegisteredThanReturn201() throws Exception {
-        UserDto userDto = new UserDto("testUser", "testPassword");
-
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
+                        .content(objectMapper.writeValueAsString(validUserDto)))
                 .andExpect(status().isCreated());
-    }
-
-    @Test
-    void whenExistingValidUserRegisteredThanReturn409() throws Exception {
-        UserDto userDto = new UserDto("testUser", "testPassword");
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isCreated());
-        mockMvc.perform(MockMvcRequestBuilders.post("/users")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(userDto)))
-                .andExpect(status().isConflict());
     }
 
     @Test
@@ -72,5 +58,17 @@ class UserIntegrationTests {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(
                         "Password must be between 8 and 255 characters, User name must be between 5 and 255 characters"));
+    }
+
+    @Test
+    void whenExistingValidUserRegisteredThanReturn409() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validUserDto)))
+                .andExpect(status().isCreated());
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(validUserDto)))
+                .andExpect(status().isConflict());
     }
 }

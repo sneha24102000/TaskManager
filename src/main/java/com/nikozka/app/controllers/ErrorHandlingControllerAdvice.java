@@ -44,11 +44,13 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
 
         return new ResponseEntity<>(new ErrorResponse(errorMessages), status);
     }
+
     @ExceptionHandler(TaskNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<ErrorResponse> handleTaskNotFoundException(TaskNotFoundException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(InvalidStateException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorResponse> handleInvalidStateException(InvalidStateException ex) {

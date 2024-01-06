@@ -17,7 +17,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
-
 public class TaskController {
 
     private final TaskService taskService;
@@ -31,7 +30,7 @@ public class TaskController {
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     @GetMapping("/current")
-    public ResponseEntity<List<TaskDto>> getMyTasks(Pageable pageable) {
+    public ResponseEntity<List<TaskDto>> getUsersTasks(Pageable pageable) {
         List<TaskDto> myTasks = taskService.getTasksForUser(pageable);
         return new ResponseEntity<>(myTasks, HttpStatus.OK);
     }
