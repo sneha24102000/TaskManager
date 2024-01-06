@@ -57,7 +57,7 @@ class UserIntegrationTests {
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(
-                        "Password must be between 8 and 255 characters, User name must be between 5 and 255 characters"));
+                        "User name must be between 5 and 255 characters, Password must be between 8 and 255 characters"));
     }
 
     @Test

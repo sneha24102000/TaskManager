@@ -38,8 +38,7 @@ public class TaskService {
     }
 
     public TaskDto getTaskById(Long taskId) {
-        return convertToTaskDTO(taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId)));
+        return convertToTaskDTO(findTaskById(taskId));
     }
 
     public List<TaskDto> getTasksForUser(Pageable pageable) {
@@ -56,8 +55,8 @@ public class TaskService {
         return taskRepository.save(taskEntity).getId();
     }
 
-    public void updateTaskStatus(Long id, StatusDto statusDto) {
-        TaskEntity task = taskRepository.findById(id).orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + id));
+    public void updateTaskStatus(Long taskId, StatusDto statusDto) {
+        TaskEntity task = findTaskById(taskId);
         TaskStatus previousStatus = task.getStatus();
 
         TaskStatus newStatus = TaskStatus.valueOfIgnoreCase(statusDto.getNewStatus());
@@ -73,9 +72,7 @@ public class TaskService {
 
 
     public void deleteTask(Long taskId) {
-        TaskEntity task = taskRepository.findById(taskId).orElseThrow(
-                () -> new TaskNotFoundException("Task not found with id: " + taskId));
-        taskRepository.delete(task);
+        taskRepository.delete(findTaskById(taskId));
     }
 
     private TaskDto convertToTaskDTO(TaskEntity task) {
@@ -89,5 +86,10 @@ public class TaskService {
     private Long getUserId() {
         UserEntity user = userRepository.findByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
         return user.getId();
+    }
+
+    private TaskEntity findTaskById(Long taskId) {
+        return taskRepository.findById(taskId)
+                .orElseThrow(() -> new TaskNotFoundException("Task not found with id: " + taskId));
     }
 }
