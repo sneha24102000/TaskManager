@@ -2,6 +2,7 @@ package com.nikozka.app.controllers;
 
 import com.nikozka.app.dtos.UserDto;
 import com.nikozka.app.servises.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Tag(name = "Users API")
 public class UserController {
 
     private final UserService userService;
