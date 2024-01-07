@@ -10,12 +10,11 @@
     </parent>
     <groupId>com.nikozka.app</groupId>
     <artifactId>demo</artifactId>
-    <version>1.0.0</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>Task Manager</name>
     <description>Task Manager</description>
     <properties>
         <java.version>17</java.version>
-        <start-class>com.nikozka.springapp.App</start-class>
     </properties>
     <dependencies>
         <dependency>
@@ -69,34 +68,23 @@
             <version>2.1.214</version>
             <scope>runtime</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.2.0</version>
-        </dependency>
     </dependencies>
 
     <build>
-        <finalName>${project.artifactId}-${version}</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>${start-class}</mainClass>
-                    <layout>ZIP</layout>
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
                 </configuration>
             </plugin>
         </plugins>
-        <resources>
-            <resource>
-                <filtering>true</filtering>
-                <directory>src/main/resources</directory>
-                <includes>
-                    <include>application.properties</include>
-                </includes>
-            </resource>
-        </resources>
     </build>
+
 </project>
