@@ -68,7 +68,8 @@ public class TaskService {
         TaskStatusValidator updater = factory.getValidator(previousStatus);
 
         if (!updater.isTaskStatusValid(task, newStatus)) {
-            throw new InvalidStateException(messageSource.getMessage("task.invalid.state.transition", new Object[]{taskId}, LocaleContextHolder.getLocale()));
+            throw new InvalidStateException(messageSource.getMessage(
+                    "task.invalid.state.transition", new Object[]{taskId}, LocaleContextHolder.getLocale()));
         }
         task.setStatus(newStatus);
         taskRepository.save(task);
