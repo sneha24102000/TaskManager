@@ -60,4 +60,5 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidStateException(InvalidStateException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
+    // todo add handler that will catch all other exceptions
 }

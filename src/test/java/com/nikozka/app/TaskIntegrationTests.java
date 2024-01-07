@@ -77,7 +77,7 @@ class TaskIntegrationTests {
                         .content(objectMapper.writeValueAsString(taskDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage")
-                        .value("Description name must be between 5 and 255 characters"));
+                        .value("Description must be between 5 and 255 characters"));
     }
 
     @Test
@@ -162,14 +162,14 @@ class TaskIntegrationTests {
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteNotExistedTaskThenReturn404() throws Exception {
-        mockMvc.perform(delete("/tasks/delete/{taskId}", 1L))
+        mockMvc.perform(delete("/tasks/{taskId}", 1L))
                 .andExpect(status().isNotFound());
     }
 
     @Test
     @WithMockUser(roles = "ADMIN")
     void deleteExistedTaskThenReturn204() throws Exception {
-        mockMvc.perform(delete("/tasks/delete/{taskId}", saveTask()))
+        mockMvc.perform(delete("/tasks/{taskId}", saveTask()))
                 .andExpect(status().isNoContent());
     }
 
@@ -177,7 +177,7 @@ class TaskIntegrationTests {
     @WithMockUser(roles = "USER")
     void deleteExistedTaskThenReturn403() throws Exception {
         saveTask();
-        mockMvc.perform(delete("/tasks/delete/{taskId}", 1L))
+        mockMvc.perform(delete("/tasks/{taskId}", 1L))
                 .andExpect(status().isForbidden());
     }
 

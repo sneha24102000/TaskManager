@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -50,6 +51,8 @@ class TaskServiceTest {
     ModelMapper modelMapper;
     @Mock
     TaskStatusValidatorFactory factory;
+    @Mock
+    MessageSource messageSource;
     @InjectMocks
     TaskService taskService;
     @Captor
@@ -105,6 +108,7 @@ class TaskServiceTest {
     void getTaskByIdTestWhenTaskIsNotFoundThenThrowException() {
 
         when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+        when(messageSource.getMessage(any(), any(), any())).thenReturn("Error");
 
         assertThrows(TaskNotFoundException.class, () -> taskService.getTaskById(1L));
 
@@ -135,9 +139,12 @@ class TaskServiceTest {
         taskService.deleteTask(1L);
         verify(taskRepository).delete(Mockito.any());
     }
+
     @Test
     void deleteTaskTestWhenNotExistingTaskThenThrowException() {
         when(taskRepository.findById(1L)).thenReturn(Optional.empty());
+        when(messageSource.getMessage(any(), any(), any())).thenReturn("Error");
+
         assertThrows(TaskNotFoundException.class, () -> taskService.deleteTask(1L));
         verify(taskRepository, Mockito.times(0)).delete(Mockito.any());
     }
@@ -193,6 +200,7 @@ class TaskServiceTest {
         StatusDto statusDto = new StatusDto("PLANNED");
 
         when(taskRepository.findById(1L)).thenReturn(Optional.of(taskEntity));
+        when(messageSource.getMessage(any(), any(), any())).thenReturn("Error");
         when(factory.getValidator(taskEntity.getStatus())).thenReturn((task, status) -> false);
 
         assertThrows(InvalidStateException.class, () -> taskService.updateTaskStatus(1L, statusDto));

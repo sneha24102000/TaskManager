@@ -12,8 +12,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.context.MessageSource;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +27,8 @@ class UserServiceTest {
 
     @Mock
     private ModelMapper modelMapper;
+    @Mock
+    MessageSource messageSource;
 
     @InjectMocks
     private UserService userService;
@@ -51,6 +55,7 @@ class UserServiceTest {
         UserDto userDto = new UserDto("existingUser", "password");
 
         when(userRepository.findByUsername("existingUser")).thenReturn(new UserEntity());
+        when(messageSource.getMessage(any(), any(), any())).thenReturn("Error");
 
         assertThrows(UserAlreadyExistException.class, () -> userService.saveUser(userDto));
     }
