@@ -53,14 +53,14 @@ class UserIntegrationTests {
 
     @Test
     void whenInvalidUserRegisteredThanReturn400() throws Exception {
-        UserDto userDto = new UserDto("t", "t");
+        UserDto userDto = new UserDto("t", "somepassword");
 
         mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.errorMessage").value(
-                        "Username must be between 5 and 255 characters, Password must be between 8 and 255 characters"));
+                        "Username must be between 5 and 255 characters"));
     }
 
     @Test

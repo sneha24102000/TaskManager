@@ -9,13 +9,16 @@ import lombok.Setter;
 @Setter
 @Entity
 @NoArgsConstructor
+@Table(name = "users")
 public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(name = "username", unique = true)
     private String username;
+    @Column(name = "password")
     private String password;
+    @Column(name = "role")
     private String role = "ROLE_USER";
 
     public UserEntity(String username, String password) {
