@@ -43,7 +43,7 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {
 
         String errorMessages = ex.getBindingResult().getFieldErrors().stream()
-                .map(fieldError -> messageSource.getMessage(fieldError.getDefaultMessage(),null, LocaleContextHolder.getLocale()))
+                .map(fieldError -> messageSource.getMessage(fieldError.getDefaultMessage(), null, LocaleContextHolder.getLocale()))
                 .collect(Collectors.joining(", "));
 
         return new ResponseEntity<>(new ErrorResponse(errorMessages), status);
@@ -60,5 +60,11 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
     public ResponseEntity<ErrorResponse> handleInvalidStateException(InvalidStateException ex) {
         return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
-    // todo add handler that will catch all other exceptions
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+        logger.error("Unexpected error occurred", ex);
+        return new ResponseEntity<>(new ErrorResponse("An unexpected error occurred"), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 }
