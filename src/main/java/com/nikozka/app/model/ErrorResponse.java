@@ -1,17 +1,41 @@
 package com.nikozka.app.model;
 
-public class ErrorResponse {
-    String errorMessage;
+import org.springframework.http.HttpStatusCode;
 
-    public ErrorResponse(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
+import java.time.LocalDateTime;
 
-    public String getErrorMessage() {
-        return errorMessage;
-    }
+    public class ErrorResponse {
+        private String errorMessage;
+        private HttpStatusCode status;
+        private LocalDateTime datetime;
 
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
+        public ErrorResponse(String errorMessage, HttpStatusCode status, LocalDateTime datetime) {
+            this.errorMessage = errorMessage;
+            this.status = status;
+            this.datetime = datetime;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+
+        public void setErrorMessage(String errorMessage) {
+            this.errorMessage = errorMessage;
+        }
+
+        public HttpStatusCode getStatus() {
+            return status;
+        }
+
+        public void setStatus(HttpStatusCode status) {
+            this.status = status;
+        }
+
+        public LocalDateTime getDatetime() {
+            return datetime;
+        }
+
+        public void setDatetime(LocalDateTime datetime) {
+            this.datetime = datetime;
+        }
     }
-}
