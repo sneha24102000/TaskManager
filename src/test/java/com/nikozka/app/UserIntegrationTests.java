@@ -53,7 +53,7 @@ class UserIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value(
+                .andExpect(jsonPath("$.detail").value(
                         "Username must be between 5 and 255 characters"));
     }
 

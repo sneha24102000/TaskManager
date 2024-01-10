@@ -3,14 +3,10 @@ package com.nikozka.app.controllers;
 import com.nikozka.app.exceptions.InvalidStateException;
 import com.nikozka.app.exceptions.TaskNotFoundException;
 import com.nikozka.app.exceptions.UserAlreadyExistException;
-import com.nikozka.app.model.ErrorResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -18,7 +14,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
@@ -28,8 +23,8 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
 
 
     @ExceptionHandler(UserAlreadyExistException.class)
-    public ResponseEntity<ErrorResponse> handleUserAlreadyExistException(UserAlreadyExistException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), HttpStatusCode.valueOf(409), LocalDateTime.now()), HttpStatus.CONFLICT);
+    public ResponseEntity<ProblemDetail> handleUserAlreadyExistException(UserAlreadyExistException ex) {
+        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage())).build();
     }
 
     @Override
@@ -40,26 +35,28 @@ class ErrorHandlingControllerAdvice extends ResponseEntityExceptionHandler {
                 .map(fieldError -> messageSource.getMessage(fieldError.getDefaultMessage(), null, LocaleContextHolder.getLocale()))
                 .collect(Collectors.joining(", "));
 
-        return new ResponseEntity<>(new ErrorResponse(errorMessages, status, LocalDateTime.now()), status);
+        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(status, errorMessages)).build();
     }
 
     @ExceptionHandler(TaskNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleTaskNotFoundException(TaskNotFoundException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), HttpStatusCode.valueOf(404), LocalDateTime.now()), HttpStatus.NOT_FOUND);
+    public ResponseEntity<ProblemDetail> handleTaskNotFoundException(TaskNotFoundException ex) {
+        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage())).build();
     }
 
     @ExceptionHandler(InvalidStateException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidStateException(InvalidStateException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), HttpStatusCode.valueOf(400), LocalDateTime.now()), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<ProblemDetail> handleInvalidStateException(InvalidStateException ex) {
+        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage())).build();
     }
+
     @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage(), HttpStatusCode.valueOf(403), LocalDateTime.now()), HttpStatus.FORBIDDEN);
+    public ResponseEntity<ProblemDetail> handleAccessDeniedException(AccessDeniedException ex) {
+        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.FORBIDDEN, ex.getMessage())).build();
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleGenericException(Exception ex) {
+    public ResponseEntity<ProblemDetail> handleGenericException(Exception ex) {
         logger.error("Unexpected error occurred", ex);
-        return new ResponseEntity<>(new ErrorResponse("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, LocalDateTime.now()), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.of(ProblemDetail.forStatusAndDetail(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred")).build();
+
     }
 }

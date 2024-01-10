@@ -4,7 +4,6 @@ import com.nikozka.app.dtos.IdDto;
 import com.nikozka.app.dtos.RequestCreateTaskDto;
 import com.nikozka.app.dtos.StatusDto;
 import com.nikozka.app.dtos.TaskDto;
-import com.nikozka.app.model.ErrorResponse;
 import com.nikozka.app.servises.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -16,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +37,9 @@ public class TaskController {
             @ApiResponse(responseCode = "201", description = "Task created successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = IdDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad request, validation error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 
     })
     public ResponseEntity<IdDto> createTask(@RequestBody @Valid RequestCreateTaskDto task) {
@@ -54,7 +54,7 @@ public class TaskController {
             @ApiResponse(responseCode = "200", description = "Tasks retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskDto.class, type = "List"))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 
     })
     public ResponseEntity<List<TaskDto>> getUsersTasks(Pageable pageable) {
@@ -68,9 +68,9 @@ public class TaskController {
             @ApiResponse(responseCode = "200", description = "Task retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskDto.class))),
             @ApiResponse(responseCode = "404", description = "Task not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) {
         TaskDto task = taskService.getTaskById(taskId);
@@ -83,11 +83,11 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Task status updated successfully"),
             @ApiResponse(responseCode = "400", description = "Bad request, validation error",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "404", description = "Task not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 
     })
     public ResponseEntity<Void> updateTaskStatus(@PathVariable Long taskId, @RequestBody @Valid StatusDto newStatus) {
@@ -102,7 +102,7 @@ public class TaskController {
             @ApiResponse(responseCode = "200", description = "Tasks retrieved successfully",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = TaskDto.class, type = "List"))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<List<TaskDto>> getAllTasks(Pageable pageable) {
         List<TaskDto> tasks = taskService.getAllTasks(pageable);
@@ -115,11 +115,11 @@ public class TaskController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Task deleted successfully"),
             @ApiResponse(responseCode = "404", description = "Task not found",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class))),
             @ApiResponse(responseCode = "403", description = "Forbidden, I know who you are, but you're not allowed here",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
     })
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);

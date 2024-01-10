@@ -76,7 +76,7 @@ class TaskIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(taskDto)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage")
+                .andExpect(jsonPath("$.detail")
                         .value("Description must be between 5 and 255 characters"));
     }
 
@@ -111,7 +111,7 @@ class TaskIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newStatus)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage").value("Invalid state transition for task with id: " + taskId));
+                .andExpect(jsonPath("$.detail").value("Invalid state transition for task with id: " + taskId));
     }
 
     @Test
@@ -122,7 +122,7 @@ class TaskIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newStatus)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorMessage").value("Task not found with id: " + 1));
+                .andExpect(jsonPath("$.detail").value("Task not found with id: " + 1));
     }
 
     @Test
@@ -133,7 +133,7 @@ class TaskIntegrationTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(newStatus)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorMessage")
+                .andExpect(jsonPath("$.detail")
                         .value("Invalid status. Allowed values are PLANNED, WORK_IN_PROGRESS, POSTPONED, NOTIFIED, SIGNED, DONE, CANCELLED"));
     }
 
