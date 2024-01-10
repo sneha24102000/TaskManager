@@ -1,9 +1,6 @@
 package com.nikozka.app.servises;
 
-import com.nikozka.app.dtos.RequestCreateTaskDto;
-import com.nikozka.app.dtos.StatusDto;
-import com.nikozka.app.dtos.TaskDto;
-import com.nikozka.app.dtos.TaskStatus;
+import com.nikozka.app.dtos.*;
 import com.nikozka.app.entity.TaskEntity;
 import com.nikozka.app.entity.UserEntity;
 import com.nikozka.app.exceptions.InvalidStateException;
@@ -52,11 +49,11 @@ public class TaskService {
                 .toList();
     }
 
-    public Long createTask(RequestCreateTaskDto task) {
+    public IdDto createTask(RequestCreateTaskDto task) {
         TaskEntity taskEntity = convertToEntity(task);
         taskEntity.setStatus(TaskStatus.PLANNED);
         taskEntity.setUserId(getUserId());
-        return taskRepository.save(taskEntity).getId();
+        return new IdDto(taskRepository.save(taskEntity).getId());
     }
 
     public void updateTaskStatus(Long taskId, StatusDto statusDto) {

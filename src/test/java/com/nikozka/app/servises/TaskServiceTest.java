@@ -1,9 +1,6 @@
 package com.nikozka.app.servises;
 
-import com.nikozka.app.dtos.RequestCreateTaskDto;
-import com.nikozka.app.dtos.StatusDto;
-import com.nikozka.app.dtos.TaskDto;
-import com.nikozka.app.dtos.TaskStatus;
+import com.nikozka.app.dtos.*;
 import com.nikozka.app.entity.TaskEntity;
 import com.nikozka.app.entity.UserEntity;
 import com.nikozka.app.exceptions.InvalidStateException;
@@ -60,16 +57,10 @@ class TaskServiceTest {
 
     @Test
     void createTaskTestCreateTaskAndReturnId() {
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        when(authentication.getName()).thenReturn("username");
+        mockAuthentication();
 
         RequestCreateTaskDto requestCreateTaskDto = new RequestCreateTaskDto("description",
-                LocalDate.of(2023, 1,3));
-        UserEntity userEntity = new UserEntity("newUser", "password");
-        userEntity.setId(1L);
+                LocalDate.of(2023, 1, 3));
 
         TaskEntity taskEntity = new TaskEntity();
         taskEntity.setDescription(requestCreateTaskDto.getDescription());
@@ -77,13 +68,13 @@ class TaskServiceTest {
         taskEntity.setId(1L);
 
         when(modelMapper.map(requestCreateTaskDto, TaskEntity.class)).thenReturn(taskEntity);
-        when(userRepository.findByUsername("username")).thenReturn(userEntity);
+        when(userRepository.findByUsername("username")).thenReturn(getUserEntity());
 
         taskEntity.setStatus(TaskStatus.PLANNED);
         taskEntity.setUserId(1L);
         when(taskRepository.save(taskEntity)).thenReturn(taskEntity);
 
-        assertEquals(1L, taskService.createTask(requestCreateTaskDto));
+        assertEquals(1L, taskService.createTask(requestCreateTaskDto).getId());
         verify(taskRepository).save(argumentCaptor.capture());
 
         assertAll("TaskEntity Properties",
@@ -151,21 +142,14 @@ class TaskServiceTest {
 
     @Test
     void getTasksForUserTestReturnListOfTaskDto() {
-        Authentication authentication = mock(Authentication.class);
-        SecurityContext securityContext = mock(SecurityContext.class);
-        when(securityContext.getAuthentication()).thenReturn(authentication);
-        SecurityContextHolder.setContext(securityContext);
-        when(authentication.getName()).thenReturn("username");
-
-        UserEntity userEntity = new UserEntity("username", "password");
-        userEntity.setId(1L);
+        mockAuthentication();
 
         Pageable pageable = mock(Pageable.class);
 
         TaskEntity taskEntity = new TaskEntity();
         Page<TaskEntity> taskPage = new PageImpl<>(List.of(taskEntity));
 
-        when(userRepository.findByUsername("username")).thenReturn(userEntity);
+        when(userRepository.findByUsername("username")).thenReturn(getUserEntity());
         when(taskRepository.findByUserId(eq(1L), any(Pageable.class))).thenReturn(taskPage);
 
         when(modelMapper.map(taskEntity, TaskDto.class)).thenReturn(new TaskDto());
@@ -204,5 +188,19 @@ class TaskServiceTest {
         when(factory.getValidator(taskEntity.getStatus())).thenReturn((task, status) -> false);
 
         assertThrows(InvalidStateException.class, () -> taskService.updateTaskStatus(1L, statusDto));
+    }
+
+    private void mockAuthentication() {
+        Authentication authentication = mock(Authentication.class);
+        SecurityContext securityContext = mock(SecurityContext.class);
+        when(securityContext.getAuthentication()).thenReturn(authentication);
+        SecurityContextHolder.setContext(securityContext);
+        when(authentication.getName()).thenReturn("username");
+    }
+
+    private UserEntity getUserEntity() {
+        UserEntity userEntity = new UserEntity("username", "password");
+        userEntity.setId(1L);
+        return userEntity;
     }
 }

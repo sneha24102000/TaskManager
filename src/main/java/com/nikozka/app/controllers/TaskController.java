@@ -1,5 +1,6 @@
 package com.nikozka.app.controllers;
 
+import com.nikozka.app.dtos.IdDto;
 import com.nikozka.app.dtos.RequestCreateTaskDto;
 import com.nikozka.app.dtos.StatusDto;
 import com.nikozka.app.dtos.TaskDto;
@@ -34,16 +35,16 @@ public class TaskController {
     @Operation(summary = "Create a new task", description = "Create a new task with the provided details")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Task created successfully",
-                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = Long.class))),
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = IdDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad request, validation error",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class)))
 
     })
-    public ResponseEntity<Long> createTask(@RequestBody @Valid RequestCreateTaskDto task) {
-        Long id = taskService.createTask(task);
-        return new ResponseEntity<>(id, HttpStatus.CREATED);
+    public ResponseEntity<IdDto> createTask(@RequestBody @Valid RequestCreateTaskDto task) {
+        IdDto idDto = taskService.createTask(task);
+        return new ResponseEntity<>(idDto, HttpStatus.CREATED);
     }
 
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
