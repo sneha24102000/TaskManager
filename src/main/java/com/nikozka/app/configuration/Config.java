@@ -21,6 +21,7 @@ public class Config implements WebMvcConfigurer {
     public ModelMapper modelMapper() {
         return new ModelMapper();
     }
+
     @Bean
     public TaskStatusValidatorFactory taskStatusUpdaterFactory() {
         return new TaskStatusValidatorFactory();
@@ -32,16 +33,19 @@ public class Config implements WebMvcConfigurer {
         slr.setDefaultLocale(Locale.US);
         return slr;
     }
+
     @Bean
     public LocaleChangeInterceptor localeChangeInterceptor() {
         LocaleChangeInterceptor lci = new LocaleChangeInterceptor();
         lci.setParamName("lang");
         return lci;
     }
+
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
     }
+
     @Bean
     public MessageSource messageSource() {
         ResourceBundleMessageSource messageSource = new ResourceBundleMessageSource();
