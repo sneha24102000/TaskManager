@@ -1,6 +1,7 @@
 package com.nikozka.app.controllers;
 
 import com.nikozka.app.dtos.UserDto;
+import com.nikozka.app.logs.LogExecutionTime;
 import com.nikozka.app.servises.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -37,6 +38,7 @@ public class UserController {
                     content = @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ProblemDetail.class)))
     })
+    @LogExecutionTime
     public ResponseEntity<Void> register(@RequestBody @Valid UserDto userDto) {
         userService.saveUser(userDto);
         return new ResponseEntity<>(HttpStatus.CREATED);

@@ -4,6 +4,7 @@ import com.nikozka.app.dtos.IdDto;
 import com.nikozka.app.dtos.RequestCreateTaskDto;
 import com.nikozka.app.dtos.StatusDto;
 import com.nikozka.app.dtos.TaskDto;
+import com.nikozka.app.logs.LogExecutionTime;
 import com.nikozka.app.servises.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -42,6 +43,7 @@ public class TaskController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 
     })
+    @LogExecutionTime
     public ResponseEntity<IdDto> createTask(@RequestBody @Valid RequestCreateTaskDto task) {
         IdDto idDto = taskService.createTask(task);
         return new ResponseEntity<>(idDto, HttpStatus.CREATED);
@@ -57,6 +59,7 @@ public class TaskController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 
     })
+    @LogExecutionTime
     public ResponseEntity<List<TaskDto>> getUsersTasks(Pageable pageable) {
         List<TaskDto> myTasks = taskService.getTasksForUser(pageable);
         return new ResponseEntity<>(myTasks, HttpStatus.OK);
@@ -72,6 +75,7 @@ public class TaskController {
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
     })
+    @LogExecutionTime
     public ResponseEntity<TaskDto> getTask(@PathVariable Long taskId) {
         TaskDto task = taskService.getTaskById(taskId);
         return new ResponseEntity<>(task, HttpStatus.OK);
@@ -90,6 +94,7 @@ public class TaskController {
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
 
     })
+    @LogExecutionTime
     public ResponseEntity<Void> updateTaskStatus(@PathVariable Long taskId, @RequestBody @Valid StatusDto newStatus) {
         taskService.updateTaskStatus(taskId, newStatus);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -104,6 +109,7 @@ public class TaskController {
             @ApiResponse(responseCode = "401", description = "Unauthorized, I don’t recognize you",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
     })
+    @LogExecutionTime
     public ResponseEntity<List<TaskDto>> getAllTasks(Pageable pageable) {
         List<TaskDto> tasks = taskService.getAllTasks(pageable);
         return new ResponseEntity<>(tasks, HttpStatus.OK);
@@ -121,6 +127,7 @@ public class TaskController {
             @ApiResponse(responseCode = "403", description = "Forbidden, I know who you are, but you're not allowed here",
                     content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetail.class)))
     })
+    @LogExecutionTime
     public ResponseEntity<Void> deleteTask(@PathVariable Long taskId) {
         taskService.deleteTask(taskId);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
