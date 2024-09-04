@@ -73,7 +73,6 @@
             <version>2.1.214</version>
             <scope>runtime</scope>
         </dependency>
-
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
@@ -92,8 +91,13 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
-    </dependencies>
+        <dependency>
+            <groupId>org.apache.tomcat.embed</groupId>
+            <artifactId>tomcat-embed-core</artifactId>
+            <version>8.5.99, 9.0.86, 10.1.19, 1.0.0-M17</version>
+        </dependency>
 
+    </dependencies>
     <build>
         <finalName>${project.artifactId}-${version}</finalName>
         <plugins>
